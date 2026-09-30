@@ -201,7 +201,9 @@ export default function Footer({ t, isRtl = false }) {
 
             {/* Pill 3: Android APK */}
             <a
-              href="#"
+              href="https://github.com/tallymywords/tallymywords/releases/download/v1.0.0/TallyMyWords.apk"
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label={t?.downloadAndroidApk || 'Download Android APK'}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
             >

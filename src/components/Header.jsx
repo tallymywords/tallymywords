@@ -136,7 +136,9 @@ export default function Header({
                   <span>{t.googlePlay || 'Google Play'}</span>
                 </a>
                 <a
-                  href="#"
+                  href="https://github.com/tallymywords/tallymywords/releases/download/v1.0.0/TallyMyWords.apk"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => setIsAppMenuOpen(false)}
                   className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
                 >
