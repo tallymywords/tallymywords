@@ -1,0 +1,8 @@
+{
+  "appId": "com.tallymywords.app",
+  "appName": "Tally My Words",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

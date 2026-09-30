@@ -1,0 +1,25 @@
+{
+  "name": "Tally My Words — Reading Time & Keyword Density Analyzer",
+  "short_name": "TallyMyWords",
+  "description": "Instant, privacy-first reading time, word count, character count, and keyword density analyzer.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#4f46e5",
+  "background_color": "#f8fafc",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

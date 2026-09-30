@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tally My Words</string>
+    <string name="title_activity_main">Tally My Words</string>
+    <string name="package_name">com.tallymywords.app</string>
+    <string name="custom_url_scheme">com.tallymywords.app</string>
+</resources>
