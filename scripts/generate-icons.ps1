@@ -1,28 +1,53 @@
 # Native Windows Icon Generator for Android & PWA
-# Uses Windows built-in .NET System.Drawing (zero dependencies, no node-gyp, no sharp compilation issues)
-
 Add-Type -AssemblyName System.Drawing
 
+$candidates = @(
+    "assets/icon.png",
+    "assets/raw_icon.jpg",
+    "assets/icon.jpg",
+    "icon.png",
+    "icon.jpg",
+    "assets/logo.png",
+    "assets/logo.jpg"
+)
+
 $sourceIcon = $null
-if (Test-Path "assets/icon.png") {
-    $sourceIcon = (Resolve-Path "assets/icon.png").Path
-} elseif (Test-Path "icon.png") {
-    $sourceIcon = (Resolve-Path "icon.png").Path
-} elseif (Test-Path "assets/logo.png") {
-    $sourceIcon = (Resolve-Path "assets/logo.png").Path
-} elseif (Test-Path "logo.png") {
-    $sourceIcon = (Resolve-Path "logo.png").Path
+foreach ($path in $candidates) {
+    if (Test-Path $path -PathType Leaf) {
+        $sourceIcon = (Resolve-Path $path).Path
+        break
+    }
 }
 
 if (-not $sourceIcon) {
-    Write-Host "[Error] Could not find 'icon.png' or 'assets/icon.png'." -ForegroundColor Red
-    Write-Host "Please place your icon file as 'icon.png' in the root project folder or 'assets/icon.png' and run again." -ForegroundColor Yellow
+    Write-Host "[Error] Could not find an icon file in assets/ or root." -ForegroundColor Red
     exit 1
 }
 
 Write-Host "Found source icon: $sourceIcon" -ForegroundColor Green
 
-$srcImg = [System.Drawing.Image]::FromFile($sourceIcon)
+$rawImg = [System.Drawing.Image]::FromFile($sourceIcon)
+
+# Ensure the source image is rendered onto a square master bitmap to preserve aspect ratio
+$maxDim = [Math]::Max($rawImg.Width, $rawImg.Height)
+$squareBitmap = New-Object System.Drawing.Bitmap($maxDim, $maxDim)
+$gSquare = [System.Drawing.Graphics]::FromImage($squareBitmap)
+$gSquare.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceOver
+$gSquare.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+$gSquare.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+$gSquare.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+$gSquare.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+$gSquare.Clear([System.Drawing.Color]::Transparent)
+
+# Center image inside square
+$offsetX = [int](($maxDim - $rawImg.Width) / 2)
+$offsetY = [int](($maxDim - $rawImg.Height) / 2)
+$gSquare.DrawImage($rawImg, $offsetX, $offsetY, $rawImg.Width, $rawImg.Height)
+$gSquare.Dispose()
+$rawImg.Dispose()
+
+# Save as normalized assets/icon.png
+$squareBitmap.Save("assets/icon.png", [System.Drawing.Imaging.ImageFormat]::Png)
 
 function Resize-And-Save($src, $targetPath, $width, $height) {
     $dir = Split-Path $targetPath -Parent
@@ -31,8 +56,6 @@ function Resize-And-Save($src, $targetPath, $width, $height) {
     }
     
     $destBitmap = New-Object System.Drawing.Bitmap($width, $height)
-    $destBitmap.SetResolution($src.HorizontalResolution, $src.VerticalResolution)
-    
     $g = [System.Drawing.Graphics]::FromImage($destBitmap)
     $g.CompositingMode = [System.Drawing.Drawing2D.CompositingMode]::SourceOver
     $g.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
@@ -44,7 +67,6 @@ function Resize-And-Save($src, $targetPath, $width, $height) {
     $g.DrawImage($src, 0, 0, $width, $height)
     $g.Dispose()
     
-    # Save as PNG
     $destBitmap.Save($targetPath, [System.Drawing.Imaging.ImageFormat]::Png)
     $destBitmap.Dispose()
     Write-Host "Generated: $targetPath ($($width)x$($height))" -ForegroundColor Cyan
@@ -72,20 +94,19 @@ $resDir = "android/app/src/main/res"
 
 foreach ($d in $densities.Keys) {
     $size = $densities[$d]
-    Resize-And-Save $srcImg "$resDir/$d/ic_launcher.png" $size $size
-    Resize-And-Save $srcImg "$resDir/$d/ic_launcher_round.png" $size $size
+    Resize-And-Save $squareBitmap "$resDir/$d/ic_launcher.png" $size $size
+    Resize-And-Save $squareBitmap "$resDir/$d/ic_launcher_round.png" $size $size
 }
 
 foreach ($d in $adaptiveDensities.Keys) {
     $size = $adaptiveDensities[$d]
-    Resize-And-Save $srcImg "$resDir/$d/ic_launcher_foreground.png" $size $size
+    Resize-And-Save $squareBitmap "$resDir/$d/ic_launcher_foreground.png" $size $size
 }
 
 # Also generate PWA icons
-Resize-And-Save $srcImg "public/icon-192.png" 192 192
-Resize-And-Save $srcImg "public/icon-512.png" 512 512
+Resize-And-Save $squareBitmap "public/icon-192.png" 192 192
+Resize-And-Save $squareBitmap "public/icon-512.png" 512 512
 
-$srcImg.Dispose()
+$squareBitmap.Dispose()
 
-Write-Host "`nAll Android and PWA icons generated successfully!" -ForegroundColor Green
-Write-Host "Now run: npm run build-apk  to reassemble your APK with the new icon." -ForegroundColor Yellow
+Write-Host "`nAll Android and PWA launcher icons generated successfully!" -ForegroundColor Green

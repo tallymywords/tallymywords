@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "generate-icons": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-icons.ps1",
-    "build-apk": "powershell -ExecutionPolicy Bypass -Command \"$env:JAVA_HOME = 'C:\\Users\\DELL\\.jdks\\jbr-21.0.11'; cd android; .\\gradlew.bat assembleDebug; Copy-Item -Path 'app/build/outputs/apk/debug/app-debug.apk' -Destination '../TallyMyWords.apk' -Force; Write-Host 'APK built at TallyMyWords.apk' -ForegroundColor Green\""
+    "build-apk": "powershell -ExecutionPolicy Bypass -Command \"$env:JAVA_HOME = 'C:\\Program Files\\Android\\Android Studio\\jbr'; cd android; .\\gradlew.bat assembleDebug; Copy-Item -Path 'app/build/outputs/apk/debug/app-debug.apk' -Destination '../TallyMyWords.apk' -Force; Write-Host 'APK built at TallyMyWords.apk' -ForegroundColor Green\""
   },
   "dependencies": {
     "@capacitor/core": "^7.0.0",
