@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import {
-  Search,
   Globe,
   ChevronDown,
   ShieldCheck,
@@ -19,6 +19,7 @@ export default function Header({
 }) {
   const [isAppMenuOpen, setIsAppMenuOpen] = useState(false);
   const appMenuRef = useRef(null);
+  const isNative = typeof Capacitor !== 'undefined' && typeof Capacitor.isNativePlatform === 'function' && Capacitor.isNativePlatform();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -38,13 +39,22 @@ export default function Header({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand Logo, Title, Language Selector & Get the App */}
         <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-          {/* Logo */}
+          {/* Logo with centered magnifying glass and text lines */}
           <div className="relative shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white shadow-sm shadow-indigo-200">
-            <Search className="w-5 h-5 absolute text-white" strokeWidth={2.4} />
-            <div className={`absolute top-2.5 ${isRtl ? 'right-2.5' : 'left-2.5'} w-3 h-2 flex flex-col justify-between pointer-events-none opacity-90`}>
-              <span className="block h-[1.5px] w-2 bg-white rounded-full"></span>
-              <span className="block h-[1.5px] w-3 bg-white rounded-full"></span>
-            </div>
+            <svg
+              className="w-5 h-5 text-white stroke-current"
+              viewBox="0 0 24 24"
+              fill="none"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="7.5" y1="9" x2="14.5" y2="9" />
+              <line x1="7.5" y1="13" x2="12.5" y2="13" />
+            </svg>
           </div>
 
           {/* Title and Badge */}
@@ -89,65 +99,67 @@ export default function Header({
             </div>
           </div>
 
-          {/* Minimalist "Get the App" Button with Dropdown (Hover & Click) */}
-          <div
-            ref={appMenuRef}
-            className="relative shrink-0"
-            onMouseEnter={() => setIsAppMenuOpen(true)}
-            onMouseLeave={() => setIsAppMenuOpen(false)}
-          >
-            <button
-              type="button"
-              onClick={() => setIsAppMenuOpen((prev) => !prev)}
-              aria-expanded={isAppMenuOpen}
-              aria-haspopup="true"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-50 hover:bg-slate-100/90 text-slate-700 border border-slate-200/90 hover:border-slate-300 rounded-lg transition-colors cursor-pointer"
+          {/* Minimalist "Get the App" Button with Dropdown (Hidden on native platforms) */}
+          {!isNative && (
+            <div
+              ref={appMenuRef}
+              className="relative shrink-0"
+              onMouseEnter={() => setIsAppMenuOpen(true)}
+              onMouseLeave={() => setIsAppMenuOpen(false)}
             >
-              <Smartphone className="w-3.5 h-3.5 text-slate-500" />
-              <span className="whitespace-nowrap">{t.getApp || 'Get the App'}</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
-                  isAppMenuOpen ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
-
-            {/* Dropdown Menu */}
-            {isAppMenuOpen && (
-              <div
-                className={`absolute top-full mt-1.5 ${
-                  isRtl ? 'right-0 sm:right-auto sm:left-0' : 'left-0'
-                } z-50 w-44 bg-white border border-slate-200/90 rounded-xl shadow-lg p-1.5 animate-in fade-in zoom-in-95 duration-100`}
+              <button
+                type="button"
+                onClick={() => setIsAppMenuOpen((prev) => !prev)}
+                aria-expanded={isAppMenuOpen}
+                aria-haspopup="true"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-50 hover:bg-slate-100/90 text-slate-700 border border-slate-200/90 hover:border-slate-300 rounded-lg transition-colors cursor-pointer"
               >
-                <a
-                  href="#"
-                  onClick={() => setIsAppMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
+                <Smartphone className="w-3.5 h-3.5 text-slate-500" />
+                <span className="whitespace-nowrap">{t.getApp || 'Get the App'}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
+                    isAppMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {/* Dropdown Menu */}
+              {isAppMenuOpen && (
+                <div
+                  className={`absolute top-full mt-1.5 ${
+                    isRtl ? 'right-0 sm:right-auto sm:left-0' : 'left-0'
+                  } z-50 w-44 bg-white border border-slate-200/90 rounded-xl shadow-lg p-1.5 animate-in fade-in zoom-in-95 duration-100`}
                 >
-                  <Apple className="w-4 h-4 text-slate-800" />
-                  <span>{t.appStore || 'App Store'}</span>
-                </a>
-                <a
-                  href="#"
-                  onClick={() => setIsAppMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
-                >
-                  <Play className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-                  <span>{t.googlePlay || 'Google Play'}</span>
-                </a>
-                <a
-                  href="https://github.com/tallymywords/tallymywords/releases/download/v1.0.0/TallyMyWords.apk"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsAppMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
-                >
-                  <Download className="w-4 h-4 text-indigo-600" />
-                  <span>{t.downloadApk || 'Download APK'}</span>
-                </a>
-              </div>
-            )}
-          </div>
+                  <a
+                    href="#"
+                    onClick={() => setIsAppMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
+                  >
+                    <Apple className="w-4 h-4 text-slate-800" />
+                    <span>{t.appStore || 'App Store'}</span>
+                  </a>
+                  <a
+                    href="#"
+                    onClick={() => setIsAppMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
+                  >
+                    <Play className="w-4 h-4 text-emerald-600 fill-emerald-600" />
+                    <span>{t.googlePlay || 'Google Play'}</span>
+                  </a>
+                  <a
+                    href="https://github.com/tallymywords/tallymywords/releases/download/v1.0.0/TallyMyWords.apk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setIsAppMenuOpen(false)}
+                    className="flex items-center gap-2.5 px-2.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-indigo-600 rounded-lg transition-colors"
+                  >
+                    <Download className="w-4 h-4 text-indigo-600" />
+                    <span>{t.downloadApk || 'Download APK'}</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Right Feature Indicator */}

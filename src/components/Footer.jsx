@@ -1,25 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Capacitor } from '@capacitor/core';
 import { Coffee, Apple, Play, Download, Mail } from 'lucide-react';
 
 export default function Footer({ t, isRtl = false }) {
   const currentYear = new Date().getFullYear();
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletterSubmit = (e) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) return;
-    setSubscribed(true);
-    setTimeout(() => {
-      setEmail('');
-      setSubscribed(false);
-    }, 4000);
-  };
+  const isNative =
+    typeof Capacitor !== 'undefined' &&
+    typeof Capacitor.isNativePlatform === 'function' &&
+    Capacitor.isNativePlatform();
 
   const socialLinks = [
     {
       name: 'Instagram',
-      href: 'https://instagram.com',
+      href: 'https://www.instagram.com/tallymywords?stkn=ODBuNXhwcHhrNzUz',
       hoverColor: 'hover:text-pink-600',
       svg: (
         <svg
@@ -34,7 +27,7 @@ export default function Footer({ t, isRtl = false }) {
     },
     {
       name: 'Twitter (X)',
-      href: 'https://twitter.com',
+      href: 'https://x.com/tallymywords',
       hoverColor: 'hover:text-black',
       svg: (
         <svg
@@ -49,7 +42,7 @@ export default function Footer({ t, isRtl = false }) {
     },
     {
       name: 'Facebook',
-      href: 'https://facebook.com',
+      href: 'https://www.facebook.com/share/1KeveSgWUg/',
       hoverColor: 'hover:text-blue-600',
       svg: (
         <svg
@@ -64,7 +57,7 @@ export default function Footer({ t, isRtl = false }) {
     },
     {
       name: 'Snapchat',
-      href: 'https://snapchat.com',
+      href: 'https://www.snapchat.com/add/tallymywordss?share_id=DF-8K4s9BQE&locale=en-US',
       hoverColor: 'hover:text-amber-500',
       svg: (
         <svg
@@ -79,7 +72,7 @@ export default function Footer({ t, isRtl = false }) {
     },
     {
       name: 'Pinterest',
-      href: 'https://pinterest.com',
+      href: 'https://pin.it/gDd74TEtr',
       hoverColor: 'hover:text-red-600',
       svg: (
         <svg
@@ -94,7 +87,7 @@ export default function Footer({ t, isRtl = false }) {
     },
     {
       name: 'Reddit',
-      href: 'https://reddit.com',
+      href: 'https://www.reddit.com/user/tallymywords/?utm_source=share&utm_medium=mweb3x&utm_name=mweb3xcss&utm_term=1&utm_content=share_button',
       hoverColor: 'hover:text-orange-600',
       svg: (
         <svg
@@ -109,7 +102,7 @@ export default function Footer({ t, isRtl = false }) {
     },
     {
       name: 'TikTok',
-      href: 'https://tiktok.com',
+      href: 'https://tiktok.com/@tallymywords',
       hoverColor: 'hover:text-black',
       svg: (
         <svg
@@ -121,103 +114,106 @@ export default function Footer({ t, isRtl = false }) {
           <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
         </svg>
       )
+    },
+    {
+      name: 'LinkedIn',
+      href: 'https://www.linkedin.com/in/tally-words-5b4510441?trk=contact-info',
+      hoverColor: 'hover:text-blue-700',
+      svg: (
+        <svg
+          className="w-4 h-4 fill-current"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+        </svg>
+      )
     }
   ];
 
   return (
     <footer className="mt-auto border-t border-slate-200/80 bg-white/70 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col gap-6 sm:gap-8">
-        {/* Top Section: Newsletter Subscription & App Store / Download Badges */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8 pb-6 sm:pb-8 border-b border-slate-200/70">
-          {/* Newsletter Subscription Box */}
-          <div className="w-full lg:max-w-md text-center sm:text-start">
-            <h4 className="text-xs sm:text-sm font-semibold text-slate-800 mb-1">
-              {t?.newsletterHeading || 'Subscribe for occasional updates.'}
-            </h4>
-            <p className="text-xs text-slate-500 mb-3 hidden sm:block">
-              Get notified of new language models, editing tools, and features.
-            </p>
-            <form
-              action="#"
-              onSubmit={handleNewsletterSubmit}
-              className="flex flex-col sm:flex-row items-center gap-2"
-            >
-              <div className="relative w-full sm:w-auto sm:flex-1">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t?.newsletterPlaceholder || 'Enter your email...'}
-                  required
-                  className={`w-full px-3.5 py-2 text-xs sm:text-sm bg-transparent border border-slate-200 text-slate-800 placeholder:text-slate-400 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors ${
-                    isRtl ? 'text-right' : 'text-left'
-                  }`}
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-4 py-2 text-xs sm:text-sm font-medium text-white bg-slate-800 hover:bg-slate-900 rounded-md transition-colors cursor-pointer shadow-2xs whitespace-nowrap"
+        {/* Top Section: Substack Newsletter Embed & App Store / Download Badges */}
+        <div
+          className={`flex flex-col ${
+            isNative
+              ? 'items-center justify-center'
+              : 'lg:flex-row items-center justify-between'
+          } gap-6 lg:gap-8 pb-6 sm:pb-8 border-b border-slate-200/70`}
+        >
+          {/* Substack Newsletter Embed Box */}
+          <div className="w-full max-w-[480px] flex flex-col items-center sm:items-start">
+            <iframe
+              src="https://tallymywords.substack.com/embed"
+              width="480"
+              height="320"
+              style={{ border: '1px solid #EEE', background: 'white' }}
+              frameBorder="0"
+              scrolling="no"
+              title="Tally My Words Newsletter"
+              className="w-full max-w-[480px] h-[320px] rounded-xl shadow-xs overflow-hidden block"
+            />
+          </div>
+
+          {/* App Store & Direct Download Row (Hidden on Native Mobile App) */}
+          {!isNative && (
+            <div className="w-full lg:w-auto flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-3 sm:gap-3.5">
+              {/* Pill 1: App Store */}
+              <a
+                href="#"
+                aria-label={t?.downloadAppStore || 'Download on the App Store'}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
               >
-                {subscribed ? (t?.subscribed || 'Subscribed!') : (t?.subscribe || 'Subscribe')}
-              </button>
-            </form>
-          </div>
+                <Apple className="w-4 h-4 sm:w-5 sm:h-5 text-slate-900 group-hover:scale-105 transition-transform" />
+                <div className="text-start leading-tight">
+                  <span className="block text-[9px] sm:text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                    Download on the
+                  </span>
+                  <span className="block text-xs sm:text-sm font-bold text-slate-900">
+                    {t?.appStore || 'App Store'}
+                  </span>
+                </div>
+              </a>
 
-          {/* App Store & Direct Download Row (Pill-shaped badges) */}
-          <div className="w-full lg:w-auto flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-3 sm:gap-3.5">
-            {/* Pill 1: App Store */}
-            <a
-              href="#"
-              aria-label={t?.downloadAppStore || 'Download on the App Store'}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
-            >
-              <Apple className="w-4 h-4 sm:w-5 sm:h-5 text-slate-900 group-hover:scale-105 transition-transform" />
-              <div className="text-start leading-tight">
-                <span className="block text-[9px] sm:text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                  Download on the
-                </span>
-                <span className="block text-xs sm:text-sm font-bold text-slate-900">
-                  {t?.appStore || 'App Store'}
-                </span>
-              </div>
-            </a>
+              {/* Pill 2: Google Play */}
+              <a
+                href="#"
+                aria-label={t?.getGooglePlay || 'Get it on Google Play'}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
+              >
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 fill-emerald-600 group-hover:scale-105 transition-transform" />
+                <div className="text-start leading-tight">
+                  <span className="block text-[9px] sm:text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                    Get it on
+                  </span>
+                  <span className="block text-xs sm:text-sm font-bold text-slate-900">
+                    {t?.googlePlay || 'Google Play'}
+                  </span>
+                </div>
+              </a>
 
-            {/* Pill 2: Google Play */}
-            <a
-              href="#"
-              aria-label={t?.getGooglePlay || 'Get it on Google Play'}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
-            >
-              <Play className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 fill-emerald-600 group-hover:scale-105 transition-transform" />
-              <div className="text-start leading-tight">
-                <span className="block text-[9px] sm:text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                  Get it on
-                </span>
-                <span className="block text-xs sm:text-sm font-bold text-slate-900">
-                  {t?.googlePlay || 'Google Play'}
-                </span>
-              </div>
-            </a>
-
-            {/* Pill 3: Android APK */}
-            <a
-              href="https://github.com/tallymywords/tallymywords/releases/download/v1.0.0/TallyMyWords.apk"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={t?.downloadAndroidApk || 'Download Android APK'}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
-            >
-              <Download className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 group-hover:scale-105 transition-transform" />
-              <div className="text-start leading-tight">
-                <span className="block text-[9px] sm:text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
-                  Direct Download
-                </span>
-                <span className="block text-xs sm:text-sm font-bold text-slate-900">
-                  {t?.downloadAndroidApk || 'Android APK'}
-                </span>
-              </div>
-            </a>
-          </div>
+              {/* Pill 3: Android APK (Direct Download from live release) */}
+              <a
+                href="https://github.com/tallymywords/tallymywords/releases/download/v1.0.0/TallyMyWords.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t?.downloadAndroidApk || 'Download Android APK'}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 shadow-2xs hover:border-slate-300 hover:shadow-xs transition-all duration-150 group cursor-pointer"
+              >
+                <Download className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 group-hover:scale-105 transition-transform" />
+                <div className="text-start leading-tight">
+                  <span className="block text-[9px] sm:text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
+                    Direct Download
+                  </span>
+                  <span className="block text-xs sm:text-sm font-bold text-slate-900">
+                    {t?.downloadAndroidApk || 'Android APK'}
+                  </span>
+                </div>
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Bottom Row: Copyright Text, Social/Mail Icons, and Buy me a coffee */}
@@ -246,7 +242,7 @@ export default function Footer({ t, isRtl = false }) {
 
               {/* Email Support Link with Mail Icon */}
               <a
-                href="mailto:hello@tallymywords.com?subject=Tally%20My%20Words%20Feedback&body=Hi%20there,%20I%20have%20a%20suggestion%20for%20the%20app:%0D%0A"
+                href="mailto:hello@tallymywords.com"
                 aria-label={t?.emailSupport || 'Email Support & Feedback'}
                 title={t?.emailSupport || 'Email Support'}
                 className="transition-colors duration-150 p-1 rounded-md hover:bg-slate-100/70 text-gray-400 hover:text-gray-700 cursor-pointer"
@@ -256,10 +252,10 @@ export default function Footer({ t, isRtl = false }) {
             </div>
           </div>
 
-          {/* Right Side: Minimalist Buy me a coffee button */}
+          {/* Right Side: Buy me a coffee button connected to Paystack */}
           <div className="flex items-center gap-3">
             <a
-              href="https://buymeacoffee.com"
+              href="https://paystack.shop/pay/u5jcwczvhy"
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 px-3.5 py-1.5 text-xs sm:text-sm font-medium bg-white border border-gray-200 text-gray-600 rounded-lg shadow-2xs hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
