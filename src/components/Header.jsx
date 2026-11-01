@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Capacitor } from '@capacitor/core';
 import {
   Globe,
@@ -19,7 +19,14 @@ export default function Header({
 }) {
   const [isAppMenuOpen, setIsAppMenuOpen] = useState(false);
   const appMenuRef = useRef(null);
-  const isNative = typeof Capacitor !== 'undefined' && typeof Capacitor.isNativePlatform === 'function' && Capacitor.isNativePlatform();
+  const isNative =
+    typeof Capacitor !== 'undefined' &&
+    typeof Capacitor.isNativePlatform === 'function' &&
+    Capacitor.isNativePlatform();
+
+  const currentLanguageObj = useMemo(() => {
+    return SUPPORTED_LANGUAGES.find((lang) => lang.code === selectedLanguage);
+  }, [selectedLanguage]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -35,14 +42,14 @@ export default function Header({
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-slate-200/80 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
-        {/* Brand Logo, Title, Language Selector & Get the App */}
-        <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+    <header className="sticky top-0 z-30 w-full max-w-[100vw] bg-white/85 backdrop-blur-md border-b border-slate-200/80 transition-all">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-3">
+        {/* Left Side: Brand Logo & Title */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 min-w-0">
           {/* Logo with centered magnifying glass and text lines */}
-          <div className="relative shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white shadow-sm shadow-indigo-200">
+          <div className="relative shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 text-white shadow-xs shadow-indigo-200">
             <svg
-              className="w-5 h-5 text-white stroke-current"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-current"
               viewBox="0 0 24 24"
               fill="none"
               strokeWidth="2.2"
@@ -57,46 +64,53 @@ export default function Header({
             </svg>
           </div>
 
-          {/* Title and Badge */}
-          <div className="shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap">
-                {t.appTitle}
-              </span>
-              <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100/80">
-                {t.clientSideBadge}
-              </span>
-            </div>
+          {/* Title: Hidden on mobile screens, shown on md screens and above */}
+          <div className="shrink-0 flex items-center gap-2">
+            <span className="hidden md:inline text-lg sm:text-xl font-bold tracking-tight text-slate-900 whitespace-nowrap">
+              {t.appTitle}
+            </span>
+            <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-50 text-indigo-700 border border-indigo-100/80">
+              {t.clientSideBadge}
+            </span>
           </div>
+        </div>
 
-          {/* Minimalist Language Selector Dropdown */}
-          <div className="relative flex items-center shrink-0">
-            <div className="relative inline-flex items-center">
-              <Globe
-                className={`w-3.5 h-3.5 text-slate-400 absolute ${
-                  isRtl ? 'right-2.5' : 'left-2.5'
-                } pointer-events-none`}
-              />
-              <select
-                value={selectedLanguage}
-                onChange={(e) => onLanguageChange && onLanguageChange(e.target.value)}
-                aria-label="Select interface and analysis language"
-                className={`appearance-none bg-slate-50 hover:bg-slate-100/90 text-slate-700 text-xs font-medium py-1.5 rounded-lg border border-slate-200/90 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors cursor-pointer ${
-                  isRtl ? 'pr-8 pl-7 text-right' : 'pl-8 pr-7 text-left'
-                }`}
-              >
-                {SUPPORTED_LANGUAGES.map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.name} ({lang.nativeName})
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 absolute ${
-                  isRtl ? 'left-2' : 'right-2'
-                } pointer-events-none`}
-              />
+        {/* Right Side: Controls (Language Selector, Get the App & Latency Badge) */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+          {/* Responsive Language Selector */}
+          <div className="relative inline-flex items-center">
+            <div
+              className={`relative inline-flex items-center bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-medium py-1 px-2 sm:py-1.5 sm:px-2.5 rounded-lg border border-slate-200/90 transition-colors pointer-events-none ${
+                isRtl ? 'flex-row-reverse' : 'flex-row'
+              } gap-1 sm:gap-1.5`}
+            >
+              <Globe className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              {/* Short 2-letter uppercase code on mobile */}
+              <span className="md:hidden text-xs font-semibold uppercase">
+                {selectedLanguage}
+              </span>
+              {/* Full language label on desktop/tablet (md:) */}
+              <span className="hidden md:inline text-xs font-medium whitespace-nowrap">
+                {currentLanguageObj
+                  ? `${currentLanguageObj.name} (${currentLanguageObj.nativeName})`
+                  : selectedLanguage.toUpperCase()}
+              </span>
+              <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
             </div>
+
+            {/* Native transparent select layered directly over visual pill */}
+            <select
+              value={selectedLanguage}
+              onChange={(e) => onLanguageChange && onLanguageChange(e.target.value)}
+              aria-label="Select interface and analysis language"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-slate-900 bg-white"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code} className="text-slate-900 bg-white">
+                  {lang.name} ({lang.nativeName})
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Minimalist "Get the App" Button with Dropdown (Hidden on native platforms) */}
@@ -112,22 +126,22 @@ export default function Header({
                 onClick={() => setIsAppMenuOpen((prev) => !prev)}
                 aria-expanded={isAppMenuOpen}
                 aria-haspopup="true"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium bg-slate-50 hover:bg-slate-100/90 text-slate-700 border border-slate-200/90 hover:border-slate-300 rounded-lg transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 text-xs font-medium bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/90 hover:border-slate-300 rounded-lg transition-colors cursor-pointer"
               >
-                <Smartphone className="w-3.5 h-3.5 text-slate-500" />
-                <span className="whitespace-nowrap">{t.getApp || 'Get the App'}</span>
+                <Smartphone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-500 shrink-0" />
+                <span className="whitespace-nowrap text-xs">{t.getApp || 'Get the App'}</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-150 ${
+                  className={`w-3 h-3 text-slate-400 transition-transform duration-150 shrink-0 ${
                     isAppMenuOpen ? 'rotate-180' : ''
                   }`}
                 />
               </button>
 
-              {/* Dropdown Menu */}
+              {/* Dropdown Menu (aligned inwards on mobile so it never overflows off-screen) */}
               {isAppMenuOpen && (
                 <div
                   className={`absolute top-full mt-1.5 ${
-                    isRtl ? 'right-0 sm:right-auto sm:left-0' : 'left-0'
+                    isRtl ? 'left-0 sm:left-auto sm:right-0' : 'right-0'
                   } z-50 w-44 bg-white border border-slate-200/90 rounded-xl shadow-lg p-1.5 animate-in fade-in zoom-in-95 duration-100`}
                 >
                   <a
@@ -160,11 +174,9 @@ export default function Header({
               )}
             </div>
           )}
-        </div>
 
-        {/* Right Feature Indicator */}
-        <div className="hidden sm:flex items-center gap-3 shrink-0">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 bg-slate-50 border border-slate-200/60 px-2.5 py-1.5 rounded-lg">
+          {/* Right Feature Indicator (Zero Latency badge, hidden on mobile) */}
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 bg-slate-50 border border-slate-200/60 px-2.5 py-1.5 rounded-lg shrink-0">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
             <span>{t.zeroLatency}</span>
           </div>

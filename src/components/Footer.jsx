@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Capacitor } from '@capacitor/core';
-import { Coffee, Apple, Play, Download, Mail } from 'lucide-react';
+import { Coffee, Apple, Play, Download, Mail, CheckCircle2, AlertCircle, WifiOff } from 'lucide-react';
 
 export default function Footer({ t, isRtl = false }) {
   const currentYear = new Date().getFullYear();
@@ -8,6 +8,66 @@ export default function Footer({ t, isRtl = false }) {
     typeof Capacitor !== 'undefined' &&
     typeof Capacitor.isNativePlatform === 'function' &&
     Capacitor.isNativePlatform();
+
+  // Newsletter state
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'offline' | 'error'
+  const [message, setMessage] = useState('');
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+
+    // Reset status
+    setStatus('idle');
+    setMessage('');
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return;
+
+    // 1. Offline network checking using navigator.onLine
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setStatus('offline');
+      setMessage('No internet connection. Please connect to the internet to subscribe.');
+      return;
+    }
+
+    setStatus('loading');
+
+    try {
+      // 2. Silent Substack integration via Vercel Serverless API Route
+      const apiUrl = isNative
+        ? 'https://tallymywords.com/api/subscribe'
+        : '/api/subscribe';
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: trimmedEmail })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok && response.status >= 400 && data.error) {
+        throw new Error(data.error);
+      }
+
+      // Success
+      setStatus('success');
+      setMessage(data.message || t?.subscribed || 'Subscribed! Thank you for subscribing.');
+      setEmail('');
+    } catch (err) {
+      // If network dropped mid-flight
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        setStatus('offline');
+        setMessage('No internet connection. Please connect to the internet to subscribe.');
+      } else {
+        setStatus('error');
+        setMessage(err.message || 'Unable to process subscription. Please try again later.');
+      }
+    }
+  };
 
   const socialLinks = [
     {
@@ -135,7 +195,7 @@ export default function Footer({ t, isRtl = false }) {
   return (
     <footer className="mt-auto border-t border-slate-200/80 bg-white/70 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col gap-6 sm:gap-8">
-        {/* Top Section: Substack Newsletter Embed & App Store / Download Badges */}
+        {/* Top Section: Native Newsletter UI & App Store / Download Badges */}
         <div
           className={`flex flex-col ${
             isNative
@@ -143,18 +203,78 @@ export default function Footer({ t, isRtl = false }) {
               : 'lg:flex-row items-center justify-between'
           } gap-6 lg:gap-8 pb-6 sm:pb-8 border-b border-slate-200/70`}
         >
-          {/* Substack Newsletter Embed Box */}
-          <div className="w-full max-w-[480px] flex flex-col items-center sm:items-start">
-            <iframe
-              src="https://tallymywords.substack.com/embed"
-              width="480"
-              height="320"
-              style={{ border: '1px solid #EEE', background: 'white' }}
-              frameBorder="0"
-              scrolling="no"
-              title="Tally My Words Newsletter"
-              className="w-full max-w-[480px] h-[320px] rounded-xl shadow-xs overflow-hidden block"
-            />
+          {/* Native Newsletter Subscription Box */}
+          <div className="w-full max-w-[440px] flex flex-col items-center sm:items-start text-center sm:text-start">
+            <h3 className="text-sm font-semibold text-slate-900 tracking-tight">
+              {t?.newsletterHeading || 'Subscribe for occasional updates.'}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Receive release notes, word tools, and tips directly in your inbox.
+            </p>
+
+            <form onSubmit={handleSubscribe} className="w-full mt-3 flex flex-col gap-2.5">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (status !== 'idle') {
+                    setStatus('idle');
+                    setMessage('');
+                  }
+                }}
+                placeholder={t?.newsletterPlaceholder || 'Enter your email...'}
+                required
+                disabled={status === 'loading'}
+                aria-label="Email address for newsletter"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-200 rounded-lg shadow-2xs placeholder-slate-400 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors disabled:opacity-60"
+              />
+
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="w-full px-4 py-2.5 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-60 rounded-lg shadow-2xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                {status === 'loading' ? (
+                  <span>Subscribing...</span>
+                ) : (
+                  <span>{t?.subscribe || 'Subscribe'}</span>
+                )}
+              </button>
+            </form>
+
+            {/* Offline Alert */}
+            {status === 'offline' && (
+              <div
+                role="alert"
+                className="w-full mt-2.5 p-3 rounded-lg bg-amber-50 border border-amber-200/90 text-amber-900 text-xs flex items-center gap-2.5 text-start animate-in fade-in duration-200"
+              >
+                <WifiOff className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>{message}</span>
+              </div>
+            )}
+
+            {/* Success Alert */}
+            {status === 'success' && (
+              <div
+                role="status"
+                className="w-full mt-2.5 p-3 rounded-lg bg-emerald-50 border border-emerald-200/90 text-emerald-900 text-xs flex items-center gap-2.5 text-start animate-in fade-in duration-200"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>{message}</span>
+              </div>
+            )}
+
+            {/* General Error Alert */}
+            {status === 'error' && (
+              <div
+                role="alert"
+                className="w-full mt-2.5 p-3 rounded-lg bg-rose-50 border border-rose-200/90 text-rose-900 text-xs flex items-center gap-2.5 text-start animate-in fade-in duration-200"
+              >
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{message}</span>
+              </div>
+            )}
           </div>
 
           {/* App Store & Direct Download Row (Hidden on Native Mobile App) */}
